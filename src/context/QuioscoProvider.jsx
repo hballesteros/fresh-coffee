@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { createContext, useState } from 'react';
+import { toast } from 'react-toastify';
 import { categorias as categoriasDB } from '../data/categorias'
 
 const QuioscoContext = createContext();
@@ -10,6 +12,7 @@ const QuioscoProvider = ({children}) => {
     const [categoriaActual, setCategoriaActual] = useState(categorias[0])
     const [modal, setModal] = useState(false)
     const [producto, setProducto] = useState({})
+    const [pedido, setPedido] = useState([])
     
     const handleClickCategoria = (id) => {
         const categoria = categorias.filter(categoria => categoria.id === id)[0]
@@ -24,15 +27,29 @@ const QuioscoProvider = ({children}) => {
         setProducto(producto)
     }
 
+    const handleAgregarPedido = ({categoria_id, imagen, ...producto}) => {
+        
+        if(pedido.some(pedidoState => pedidoState.id === producto.id)){
+            const pedidoActualizado = pedido.map( pedidoState => pedidoState.id === producto.id ? producto : pedidoState)
+            setPedido(pedidoActualizado)
+            toast.success('Guardado Correctamente')
+        } else {
+            setPedido([...pedido, producto])
+            toast.success('Agregado al Pedido')
+        }
+    }
+
     return (
         <QuioscoContext.Provider value={{
             categorias,
             categoriaActual,
             modal,
             producto,
+            pedido,
             handleClickCategoria,
             handleClickModal,
-            handleSetProducto
+            handleSetProducto,
+            handleAgregarPedido
         }}>
             {children}
         </QuioscoContext.Provider>
