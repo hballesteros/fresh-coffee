@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { categorias as categoriasDB } from '../data/categorias'
 
@@ -13,7 +13,13 @@ const QuioscoProvider = ({children}) => {
     const [modal, setModal] = useState(false)
     const [producto, setProducto] = useState({})
     const [pedido, setPedido] = useState([])
-    
+    const [total, setTotal] = useState(0)
+
+    useEffect(() => {
+        const nuevototal = pedido.reduce((total, producto) => total + (producto.precio * producto.cantidad), 0)
+        setTotal(nuevototal)
+    }, [pedido])
+        
     const handleClickCategoria = (id) => {
         const categoria = categorias.filter(categoria => categoria.id === id)[0]
         setCategoriaActual(categoria)
@@ -27,7 +33,7 @@ const QuioscoProvider = ({children}) => {
         setProducto(producto)
     }
 
-    const handleAgregarPedido = ({categoria_id, imagen, ...producto}) => {
+    const handleAgregarPedido = ({categoria_id, ...producto}) => {
         
         if(pedido.some(pedidoState => pedidoState.id === producto.id)){
             const pedidoActualizado = pedido.map( pedidoState => pedidoState.id === producto.id ? producto : pedidoState)
@@ -39,6 +45,18 @@ const QuioscoProvider = ({children}) => {
         }
     }
 
+    const handleEditarCantidad = id => {
+        const productoActualizar = pedido.filter( producto => producto.id === id)[0]
+        setProducto(productoActualizar)
+        setModal(true)
+    }
+
+    const handleEliminarProductoPedido = id => {
+        const pedidoActualizado = pedido.filter( producto => producto.id !== id)
+        setPedido(pedidoActualizado)
+        toast.error('Eliminado del Pedido')
+    }
+
     return (
         <QuioscoContext.Provider value={{
             categorias,
@@ -46,10 +64,13 @@ const QuioscoProvider = ({children}) => {
             modal,
             producto,
             pedido,
+            total,
             handleClickCategoria,
             handleClickModal,
             handleSetProducto,
-            handleAgregarPedido
+            handleAgregarPedido,
+            handleEditarCantidad,
+            handleEliminarProductoPedido
         }}>
             {children}
         </QuioscoContext.Provider>

@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
+import useQuiosco from '../hooks/useQuiosco';
 import { formatearDinero } from '../helpers'
 
 export default function ResumenProducto({producto}) {
   
+  const { handleEditarCantidad, handleEliminarProductoPedido } = useQuiosco()
   const { id, nombre, precio, cantidad } = producto
 
   return (
@@ -22,6 +24,7 @@ export default function ResumenProducto({producto}) {
         <button
           type="button"
           className="bg-sky-700 p-2 text-white rounded-md font-bold uppercase shadow-md text-center"
+          onClick={() => handleEditarCantidad(id)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -35,6 +38,7 @@ export default function ResumenProducto({producto}) {
         <button
           type="button"
           className="bg-red-700 p-2 text-white rounded-md font-bold uppercase shadow-md text-center"
+          onClick={() => handleEliminarProductoPedido(id)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
