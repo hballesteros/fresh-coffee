@@ -23,12 +23,9 @@ Modal.setAppElement('#root')
 
 export default function Layout() {
 
-  const { user, error } = useAuth({ middleware: 'auth'})
+  useAuth({ middleware: 'auth'})
   const { modal } = useQuiosco()
-
-  console.log(user);
-  console.log(error);
-
+  
   return (
     <>
       <div className='md:flex'>
