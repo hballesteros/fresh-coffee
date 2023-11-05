@@ -1,5 +1,7 @@
 import useSWR from 'swr'
 import clienteAxios from '../config/axios'
+import { formatearDinero } from '../helpers'
+import useQuiosco from '../hooks/useQuiosco'
 
 export default function Ordenes() {
 
@@ -10,7 +12,8 @@ export default function Ordenes() {
         }
     })
 
-    const { data, error, isLoading } = useSWR('/api/pedidos', fetcher)
+    const { data, isLoading } = useSWR('/api/pedidos', fetcher, {refreshInterval: 1000})
+    const { handleClickCompletarPedido } = useQuiosco()
 
     if(isLoading) return <p>Cargando...</p>
 
@@ -21,7 +24,7 @@ export default function Ordenes() {
                 Administra las ordenes desde aquí
             </p>
 
-            <div>
+            <div className='grid grid-cols-2 gap-5'>
                 {
                     data.data.data.map(pedido => (
                         <div key={pedido.id} className='bg-white shadow p-5 space-y-2 border-b'>
@@ -43,6 +46,23 @@ export default function Ordenes() {
                                     </div>
                                 ))
                             }
+
+                            <p className='text-lg font-bold text-slate-600'>
+                                Cliente:{' '}
+                                <span className='font-normal'>{pedido.user.name}</span>  
+                            </p>
+
+                            <p className='text-lg font-bold text-amber-500'>
+                                Total a Pagar:{' '}
+                                <span className='font-normal text-slate-600'>{formatearDinero(pedido.total)}</span>  
+                            </p>
+                            
+                            <button
+                                type='button'
+                                className='bg-indigo-600 hover:bg-indigo-800 px-5 py-2 rounded uppercase font-bold text-white text-center w-full'
+                                onClick={() => handleClickCompletarPedido(pedido.id)}
+                            >Completar</button>
+
                         </div>
                     ))
                 }

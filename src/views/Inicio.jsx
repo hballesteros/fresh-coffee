@@ -8,7 +8,12 @@ export default function Inicio() {
   const { categoriaActual } = useQuiosco()
 
   // Consulta SWR
-  const fetcher = () => clienteAxios.get('/api/productos').then(data => data.data)
+  const token = localStorage.getItem('AUTH TOKEN')
+  const fetcher = () => clienteAxios.get('/api/productos', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }).then(data => data.data)
   const { data, isLoading } = useSWR('/api/productos', fetcher, {
     refreshInterval: 1000
   })
@@ -24,6 +29,7 @@ export default function Inicio() {
             <Producto 
               key={producto.id}
               producto={producto}
+              botonAgregar={true}
             />
           ))
         }
